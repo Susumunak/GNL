@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apple <apple@student.42.fr>                +#+  +:+       +#+        */
+/*   By: del-khay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 17:15:34 by del-khay          #+#    #+#             */
-/*   Updated: 2022/10/26 16:38:20 by apple            ###   ########.fr       */
+/*   Updated: 2022/10/26 21:10:22 by del-khay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,11 @@
 # include <fcntl.h>
 # include <unistd.h>
 char	*get_next_line(int fd);
-char	*ft_get(char * line, char *stash, int fd);
-size_t	ft_isnewline(char *s);
+char	*ft_get(char * line, char **stash, int fd);
+int	ft_isnewline(char *s);
 char	*ft_strjoin(char *dst, char *src);
-char	*c_malloc(size_t n);
+void	*c_malloc(size_t nmemb, size_t size);
+void	ft_bzero(void *s, size_t n);
 size_t	ft_strlen(const char *s);
+char	*ft_clean(char *stash, int i);
 #endif

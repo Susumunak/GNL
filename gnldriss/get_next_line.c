@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apple <apple@student.42.fr>                +#+  +:+       +#+        */
+/*   By: del-khay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 17:15:37 by del-khay          #+#    #+#             */
-/*   Updated: 2022/10/26 17:05:47 by apple            ###   ########.fr       */
+/*   Updated: 2022/10/26 21:11:03 by del-khay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,49 +15,72 @@
 char	*get_next_line(int fd)
 {
 	char		*line;
-	char *tst;
 	static char	*stash;
 	
 	if (fd < 0 || read (fd, &line, 0) < 0 || BUFFER_SIZE <=0)
 		return (0);
-	stash = c_malloc(1 * sizeof(char));
-	line = c_malloc(BUFFER_SIZE + 1);
+	// if (stash == NULL)
+	// {
+	// 	stash = c_malloc(2);
+	// }
+	line = c_malloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!line)
 	{
 		free(stash);
 		return (0);
 	}
-	tst = ft_get(line, stash, fd);
-	return (tst);
+	line = ft_get(line, &stash, fd);
+	return (line);
 }
 
-char	*ft_get(char * line, char *stash, int fd)
+char	*ft_get(char * line, char **stash, int fd)
 {
 	int	i;
 	char	*line_r;
 	
 	while (read(fd, line, BUFFER_SIZE) > 0)
 	{
-		stash = ft_strjoin(stash, line);
-		if (ft_isnewline(stash) >= 0)
+		*stash = ft_strjoin(*stash, line);
+		// printf ("joining :[%s]\n",*stash);
+		if (ft_isnewline(*stash) >= 0)
 		{
-			line_r = c_malloc(ft_isnewline(stash) + 2);
-			i = ft_isnewline(stash);
+			line_r = c_malloc(ft_isnewline(*stash) + 2, sizeof(char));
+			i = ft_isnewline(*stash);
 			while(i >= 0)
 			{
-				line_r[i] = stash[i];
+				line_r[i] = (*stash)[i];
 				i--;
 			}
-			// free(line);
+			free (line);
+			// printf ("return value :[%s]\n",line_r);
+			
+			*stash = ft_clean(*stash, ft_isnewline(*stash) + 1);
 			return (line_r);
 		}
 	}
 	return (0);
 }
 
-size_t	ft_isnewline(char *s)
+char	*ft_clean(char *stash, int i)
 {
-	size_t	i;
+	char	*new_stash;
+	int j;
+	
+	j = 0;
+	new_stash = c_malloc(ft_strlen(&stash[i]) + 1, sizeof(char));
+	while(stash[i])
+	{
+		new_stash[j] = stash[i];
+		i++;
+		j++;
+	}
+	free(stash);
+	return(new_stash);
+}
+
+int	ft_isnewline(char *s)
+{
+	int	i;
 
 	i = 0;
 	while (s[i])
@@ -73,20 +96,23 @@ char	*ft_strjoin(char *dst, char *src)
 {
 	char	*rst;
 	int		i;
+	int	j;
 
 	i = 0;
-	rst = c_malloc(ft_strlen(dst)+ ft_strlen(src) + 1);
+	j = 0;
+	rst = c_malloc(ft_strlen(dst)+ ft_strlen(src) + 1, sizeof(char));
 	if (!rst)
 		return (0);
-	while (dst[i])
+	while (dst && dst[i])
 	{
 		rst[i] = dst[i];
 		i++;
 	}
-	while (*src)
+	while (src[j])
 	{
-		rst[i++] = *src;
-		src++;
+		rst[i] = src[j];
+		j++;
+		i++;
 	}
 	free(dst);
 	return (rst);
